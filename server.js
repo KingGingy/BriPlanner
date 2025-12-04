@@ -33,6 +33,9 @@ const nodemailer = require('nodemailer');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Cached email test account (created on first email request)
+let cachedTestAccount = null;
+
 // Middleware - similar to entry points in SuiteScript
 app.use(express.json()); // Parse JSON request bodies
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
@@ -202,17 +205,19 @@ app.post('/api/tasks/:id/email', async (req, res) => {
     // Note: To actually send emails, configure SMTP settings
     // This is a demonstration of how email would work
     try {
-        // For development, use ethereal.email test account
-        // In production, configure with real SMTP credentials
-        const testAccount = await nodemailer.createTestAccount();
+        // For development, use ethereal.email test account (cached for efficiency)
+        // In production, configure with real SMTP credentials via environment variables
+        if (!cachedTestAccount) {
+            cachedTestAccount = await nodemailer.createTestAccount();
+        }
 
         const transporter = nodemailer.createTransport({
             host: 'smtp.ethereal.email',
             port: 587,
             secure: false,
             auth: {
-                user: testAccount.user,
-                pass: testAccount.pass
+                user: cachedTestAccount.user,
+                pass: cachedTestAccount.pass
             }
         });
 
@@ -283,11 +288,13 @@ module.exports = { app, tasks, findTaskById, removeTaskById };
 // Start server only if this is the main module
 if (require.main === module) {
     app.listen(PORT, () => {
+        const portStr = String(PORT);
+        const urlPadding = ' '.repeat(Math.max(0, 4 - portStr.length));
         console.log(`
 ╔═══════════════════════════════════════════════════════════╗
 ║                  BriPlanner Server                        ║
 ╠═══════════════════════════════════════════════════════════╣
-║  Server running at http://localhost:${PORT}                  ║
+║  Server running at http://localhost:${PORT}${urlPadding}                  ║
 ║                                                           ║
 ║  Open your browser to start using the planner!            ║
 ║                                                           ║

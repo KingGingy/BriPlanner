@@ -36,7 +36,7 @@ function request(method, path, body = null) {
                         status: res.statusCode,
                         data: data ? JSON.parse(data) : null
                     });
-                } catch {
+                } catch (error) {
                     resolve({
                         status: res.statusCode,
                         data: data
