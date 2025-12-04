@@ -1,0 +1,23 @@
+{
+  "name": "briplanner",
+  "version": "1.0.0",
+  "description": "Detailed Automated Planner for ADHD folks",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/"
+  },
+  "keywords": [
+    "planner",
+    "tasks",
+    "adhd",
+    "productivity"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemailer": "^7.0.7",
+    "uuid": "^9.0.1"
+  }
+}
